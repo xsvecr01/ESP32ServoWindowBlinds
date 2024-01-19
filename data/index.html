@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Žaluzie</title>
+    <style type="text/css">
+      body {
+        background-color: black;
+        color: lightgray;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        width: fit-content;
+        margin: auto;
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-weight: 500;
+        text-align: center;
+      }
+
+      td {
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+      }
+      table {
+        width: 100%;
+      }
+
+      button {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-weight: 600;
+        background-color: rgb(26, 26, 26);
+        color: white;
+        border-radius: 4px;
+        border-color: rgb(50, 50, 50);
+        border-width: 2px;
+        border-style: solid;
+        padding: 7px 17px 7px 17px;
+      }
+      button:hover {
+        background-color: rgb(50, 50, 50);
+      }
+
+      input {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-weight: 600;
+        background-color: rgb(26, 26, 26);
+        color: white;
+        border-radius: 4px;
+        border-color: rgb(50, 50, 50);
+        border-width: 2px;
+        border-style: solid;
+        padding: 5px 10px 5px 10px;
+      }
+
+      .flex-container {
+        margin: auto;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        width: auto;
+      }
+
+      .button-container {
+        display: flex;
+        margin: auto;
+        margin-top: 10px;
+      }
+
+      .align-right {
+        text-align: end;
+      }
+
+      .toggle-button {
+        min-width: 150px;
+      }
+    </style>
+    <script>
+      const monthTranslation = {
+        January: "Leden",
+        February: "Únor",
+        March: "Březen",
+        April: "Duben",
+        May: "Květen",
+        June: "Červen",
+        July: "Červenec",
+        August: "Srpen",
+        September: "Září",
+        October: "Říjen",
+        November: "Listopad",
+        December: "Prosinec",
+      };
+
+      const dayTranslation = {
+        Monday: "Pondělí",
+        Tuesday: "Úterý",
+        Wednesday: "Středa",
+        Thursday: "Čtvrtek",
+        Friday: "Pátek",
+        Saturday: "Sobota",
+        Sunday: "Neděle",
+      };
+
+      async function fetchGet(url) {
+        try {
+          const response = await fetch(url, {
+            mode: "no-cors",
+            method: "GET",
+          });
+          if (response.ok) {
+            return await response.text();
+          } else {
+            return "HTTP code: " + response.status;
+          }
+        } catch (e) {
+          console.error(e);
+          return "Server unavailable";
+        }
+      }
+
+      async function fetchPost(url, data) {
+        try {
+          const response = await fetch(url, {
+            mode: "no-cors",
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: data,
+          });
+          if (response.ok) {
+            return await response.text();
+          } else {
+            return "HTTP code: " + response.status;
+          }
+        } catch (e) {
+          console.error(e);
+          return "Server unavailable";
+        }
+      }
+
+      async function fetchServerTime() {
+        const result = await fetchGet("/server-time");
+        const [day, week, month, date, time] = result.split(";");
+        if (day && week && month && date && time) {
+          document.getElementById("time").innerHTML = time;
+          document.getElementById("day").innerHTML = dayTranslation[day];
+          document.getElementById("week").innerHTML = week;
+          document.getElementById("date").innerHTML =
+            monthTranslation[month] + " " + date;
+        }
+      }
+
+      async function fetchOpenTime() {
+        const result = await fetchGet("/time-open");
+        document.getElementById("time-open").innerHTML = result;
+      }
+
+      async function fetchCloseTime() {
+        const result = await fetchGet("/time-close");
+        document.getElementById("time-close").innerHTML = result;
+      }
+
+      async function fetchOpenState() {
+        const result = await fetchGet("/open-state");
+        handleOpenStateResult(result);
+      }
+
+      function handleOpenStateResult(result) {
+        if (result == 1) {
+          document.getElementById("open-state").innerHTML = "Otevřeno (den)";
+          document.getElementById("toggle-button").innerHTML = "Zavřít";
+        } else if (result == 0) {
+          document.getElementById("open-state").innerHTML = "Zavřeno (noc)";
+          document.getElementById("toggle-button").innerHTML = "Otevřít";
+        } else {
+          document.getElementById("open-state").innerHTML = result;
+        }
+      }
+
+      async function handleSetTime(timeType) {
+        let inputId;
+        let labelId;
+        let url;
+        if (timeType === "open") {
+          inputId = "time-input-open";
+          labelId = "time-open";
+          url = "/time-open";
+        } else if (timeType === "close") {
+          inputId = "time-input-close";
+          labelId = "time-close";
+          url = "/time-close";
+        } else {
+          return;
+        }
+
+        const value = document.getElementById(inputId).value;
+        if (!value) {
+          return;
+        }
+
+        const param = new URLSearchParams();
+        param.append("time", value);
+
+        const result = await fetchPost(url, param);
+        document.getElementById(labelId).innerHTML = result;
+        document.getElementById(inputId).value = undefined;
+      }
+
+      async function handleSetOpenTime() {
+        await handleSetTime("open");
+      }
+
+      async function handleSetCloseTime() {
+        await handleSetTime("close");
+      }
+
+      async function handleToggleOpenState() {
+        const result = await fetchPost("/open-state");
+        handleOpenStateResult(result);
+      }
+
+      async function fetchServerTimePeriodically() {
+        await fetchServerTime();
+        setInterval(async () => {
+          await fetchServerTime();
+        }, 10000);
+      }
+
+      async function onLoad() {
+        await fetchServerTimePeriodically();
+        await fetchOpenState();
+        await fetchOpenTime();
+        await fetchCloseTime();
+      }
+    </script>
+  </head>
+
+  <body onload="onLoad()">
+    <h1>Automatické otevírání žaluzií</h1>
+    <div class="flex-container">
+      <h2>Informace serveru</h2>
+      <table>
+        <tr>
+          <td>Čas:</td>
+          <td class="align-right" id="time"></td>
+        </tr>
+        <tr>
+          <td>Den:</td>
+          <td class="align-right" id="day"></td>
+        </tr>
+        <tr>
+          <td>Datum:</td>
+          <td class="align-right" id="date"></td>
+        </tr>
+        <tr>
+          <td>Týden:</td>
+          <td class="align-right" id="week"></td>
+        </tr>
+      </table>
+    </div>
+    <div class="flex-container">
+      <h2>Aktuální nastavení</h2>
+      <table>
+        <tr>
+          <td>Status:</td>
+          <td class="align-right" id="open-state"></td>
+        </tr>
+        <tr>
+          <td>Otevřít v:</td>
+          <td class="align-right" id="time-open"></td>
+        </tr>
+        <tr>
+          <td>Zavřít v:</td>
+          <td class="align-right" id="time-close"></td>
+        </tr>
+      </table>
+    </div>
+    <div class="flex-container">
+      <h2>Změnit</h2>
+      <table>
+        <tr>
+          <td>Čas otevření:</td>
+          <td class="align-right">
+            <input id="time-input-open" type="time" />
+          </td>
+          <td class="align-right">
+            <button id="save-open-button" onclick="handleSetOpenTime()">
+              Uložit
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td>Čas zavření:</td>
+          <td class="align-right">
+            <input id="time-input-close" type="time" />
+          </td>
+          <td class="align-right">
+            <button id="save-close-button" onclick="handleSetCloseTime()">
+              Uložit
+            </button>
+          </td>
+        </tr>
+      </table>
+      <div class="button-container">
+        <button
+          class="toggle-button"
+          id="toggle-button"
+          onclick="handleToggleOpenState()"
+        >
+          Otevřít
+        </button>
+      </div>
+    </div>
+  </body>
+</html>
