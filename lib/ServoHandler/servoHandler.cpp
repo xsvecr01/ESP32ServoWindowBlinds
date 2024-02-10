@@ -61,7 +61,7 @@ void ServoHandler::openTask(void *_this)
 {
     while (1)
     {
-        ((ServoHandler *)_this)->setPosition(SERVO_MIDDLE + SERVO_SPEED);
+        ((ServoHandler *)_this)->setPosition(SERVO_MIDDLE + SERVO_SPEED, 500);
         vTaskDelete(NULL);
     }
 }
@@ -70,19 +70,19 @@ void ServoHandler::closeTask(void *_this)
 {
     while (1)
     {
-        ((ServoHandler *)_this)->setPosition(SERVO_MIDDLE - SERVO_SPEED);
+        ((ServoHandler *)_this)->setPosition(SERVO_MIDDLE - SERVO_SPEED, 410);
         vTaskDelete(NULL);
     }
 }
 
-void ServoHandler::setPosition(int position)
+void ServoHandler::setPosition(int position, int duration)
 {
     if (this->_running == false)
     {
         this->_running = true;
 
         this->_servo.write(position);
-        vTaskDelay(this->_servoDuration / portTICK_RATE_MS);
+        vTaskDelay(duration / portTICK_RATE_MS);
         this->stop();
         this->_running = false;
     }

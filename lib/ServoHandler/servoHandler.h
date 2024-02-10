@@ -4,7 +4,7 @@
 
 #include "headers.h"
 
-#define SERVO_SPEED 60
+#define SERVO_SPEED 50
 #define SERVO_MIDDLE 90
 
 class ServoHandler
@@ -19,14 +19,13 @@ private:
     Servo _servo;
 
     bool _running = false;
-    static const int _servoDuration = 500;
 
     void stop();
 
     static void openTask(void *_this);
     static void closeTask(void *_this);
 
-    void setPosition(int position);
+    void setPosition(int position, int duration);
 };
 
 #endif
