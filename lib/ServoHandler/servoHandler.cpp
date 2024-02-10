@@ -70,7 +70,7 @@ void ServoHandler::closeTask(void *_this)
 {
     while (1)
     {
-        ((ServoHandler *)_this)->setPosition(SERVO_MIDDLE - SERVO_SPEED, 410);
+        ((ServoHandler *)_this)->setPosition(SERVO_MIDDLE - SERVO_SPEED, 440);
         vTaskDelete(NULL);
     }
 }

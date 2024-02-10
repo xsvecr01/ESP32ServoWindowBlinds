@@ -4,7 +4,7 @@
 
 #include "headers.h"
 
-#define SERVO_SPEED 50
+#define SERVO_SPEED 60
 #define SERVO_MIDDLE 90
 
 class ServoHandler
