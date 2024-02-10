@@ -1,12 +1,11 @@
 #pragma once
-#include "ESPAsyncWebServer.h"
+#ifndef SYSTEMDIRECTOR_H
+#define SYSTEMDIRECTOR_H
+
+#include "headers.h"
 #include "stateFileHandler.h"
 #include "serverApi.h"
 #include "servoHandler.h"
-
-#ifndef SYSTEMDIRECTOR_H
-#define SYSTEMDIRECTOR_H
-#endif
 
 class SystemDirector
 {
@@ -27,3 +26,5 @@ private:
     void close();
     bool toggle();
 };
+
+#endif

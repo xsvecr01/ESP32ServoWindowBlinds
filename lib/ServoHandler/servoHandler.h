@@ -1,17 +1,11 @@
 #pragma once
-#include "ESP32PWM.h"
-#include "ESP32Servo.h"
-#include "esp_system.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "freertos/timers.h"
-
 #ifndef SERVOHANDLER_H
 #define SERVOHANDLER_H
 
+#include "headers.h"
+
 #define SERVO_SPEED 60
 #define SERVO_MIDDLE 90
-#endif
 
 class ServoHandler
 {
@@ -33,3 +27,5 @@ private:
 
     void setPosition(int position);
 };
+
+#endif

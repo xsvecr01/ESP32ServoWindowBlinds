@@ -154,7 +154,9 @@
         if (day && week && month && date && time) {
           document.getElementById("time").innerHTML = time;
           document.getElementById("day").innerHTML = dayTranslation[day];
-          document.getElementById("week").innerHTML = week;
+          document.getElementById("week").innerHTML = (
+            parseInt(week) + 1
+          ).toString();
           document.getElementById("date").innerHTML =
             monthTranslation[month] + " " + date;
         }

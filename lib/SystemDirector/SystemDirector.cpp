@@ -49,13 +49,16 @@ void SystemDirector::setupAndRunServer()
                      { handleGetCloseTime(request, this->_fileHandler.getCloseTime()); });
 
     this->_server.on("/open-state", HTTP_POST, [this](AsyncWebServerRequest *request)
-                     { handlePostOpenState(request, std::bind(&SystemDirector::toggle, this)); });
+                     { handlePostOpenState(request, [this]()
+                                           { return this->toggle(); }); });
 
     this->_server.on("/time-open", HTTP_POST, [this](AsyncWebServerRequest *request)
-                     { handlePostOpenTime(request, &this->_fileHandler); });
+                     { handlePostTime(request, [this](String time)
+                                      { return this->_fileHandler.setOpenTime(time); }); });
 
     this->_server.on("/time-close", HTTP_POST, [this](AsyncWebServerRequest *request)
-                     { handlePostCloseTime(request, &this->_fileHandler); });
+                     { handlePostTime(request, [this](String time)
+                                      { return this->_fileHandler.setCloseTime(time); }); });
 
     this->_server.begin();
 }

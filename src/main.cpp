@@ -1,11 +1,7 @@
-#include <Arduino.h>
+#include "headers.h"
 #include "utils.h"
 #include "SystemDirector.h"
-#include <nvs_flash.h>
 
-// AsyncWebServer server(80);
-// Servo servo;
-// StateFileHandler stateHandler("/state.csv");
 
 SystemDirector director;
 
@@ -16,15 +12,6 @@ void setup()
     pinMode(LED_BUILTIN, OUTPUT);
     nvs_flash_init();
 
-    // ESP32PWM::allocateTimer(0);
-    // ESP32PWM::allocateTimer(1);
-    // ESP32PWM::allocateTimer(2);
-    // ESP32PWM::allocateTimer(3);
-
-    // servo.attach(27);
-    // servo.setPeriodHertz(50);
-    // servo.write(90);
-
     initWifi();
     initTime();
     initSPIFFS();
@@ -33,13 +20,4 @@ void setup()
     director.begin();
 }
 
-void loop()
-{
-    // while (Serial.available())
-    // {
-    //     String input = Serial.readStringUntil('\n');
-    //     Serial.println("input: " + input);
-    //     long value = input.toInt();
-    //     servo.write(value);
-    // }
-}
+void loop() {}

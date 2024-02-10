@@ -1,4 +1,3 @@
-
 #include "stateFileHandler.h"
 
 StateFileHandler::StateFileHandler(const char *path)

@@ -1,24 +1,9 @@
 #pragma once
-
 #ifndef UTILS_H
 #define UTILS_H
-#endif
 
-#include <Arduino.h>
-#include <WiFi.h>
-#include <time.h>
-#include <ESP32Servo.h>
-#include <ESPmDNS.h>
-#include <SPIFFS.h>
+#include "headers.h"
 #include "wifiCredentials.h"
-
-#ifndef LED_BUILTIN
-#define LED_BUILTIN 2
-#endif
-
-#ifndef SERVO
-#define SERVO 11
-#endif
 
 // create a new file in this folder named wifiCredentials.h
 // define following credentials in wifiCredentials.h file
@@ -45,3 +30,4 @@ void initTime();
 /// @param time String HH:MM format
 /// @return true if local server time is bigger than time, false otherwise
 bool compareTime(String time);
+#endif

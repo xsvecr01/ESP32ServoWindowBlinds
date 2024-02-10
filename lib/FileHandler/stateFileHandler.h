@@ -1,6 +1,8 @@
 #pragma once
+#ifndef STATE_FILE_HANDLER_H
+#define STATE_FILE_HANDLER_H
 
-#include <SPIFFS.h>
+#include "headers.h"
 #include "utils.h"
 
 // state.csv
@@ -35,3 +37,4 @@ private:
     void openWrite();
     void close();
 };
+#endif

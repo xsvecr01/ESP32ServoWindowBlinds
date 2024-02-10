@@ -42,26 +42,12 @@ void handlePostOpenState(AsyncWebServerRequest *request, std::function<bool()> c
     request->send(200, "text/text", resp);
 }
 
-void handlePostOpenTime(AsyncWebServerRequest *request, StateFileHandler *fileHandler)
+void handlePostTime(AsyncWebServerRequest *request, std::function<String(String)> callback)
 {
     if (request->hasParam(PARAM_TIME, true))
     {
         String value = request->getParam(PARAM_TIME, true)->value();
-        String updatedTime = fileHandler->setOpenTime(value);
-        request->send(200, "text/plain", updatedTime);
-    }
-    else
-    {
-        request->send(200, "text/plain", "ERR: Time was not set.");
-    }
-}
-
-void handlePostCloseTime(AsyncWebServerRequest *request, StateFileHandler *fileHandler)
-{
-    if (request->hasParam(PARAM_TIME, true))
-    {
-        String value = request->getParam(PARAM_TIME, true)->value();
-        String updatedTime = fileHandler->setCloseTime(value);
+        String updatedTime = callback(value);
         request->send(200, "text/plain", updatedTime);
     }
     else
