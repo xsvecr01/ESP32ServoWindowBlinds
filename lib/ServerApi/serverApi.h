@@ -19,6 +19,6 @@ void handleGetCloseTime(AsyncWebServerRequest *request, String time);
 
 void handlePostOpenTime(AsyncWebServerRequest *request, StateFileHandler *fileHandler);
 void handlePostCloseTime(AsyncWebServerRequest *request, StateFileHandler *fileHandler);
-void handlePostOpenState(AsyncWebServerRequest *request, StateFileHandler *fileHandler);
+void handlePostOpenState(AsyncWebServerRequest *request, std::function<bool()> callback);
 
 void setupAndRunServer(AsyncWebServer *server, StateFileHandler *state);

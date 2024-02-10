@@ -1,12 +1,16 @@
 #pragma once
 #include "ESP32PWM.h"
 #include "ESP32Servo.h"
+#include "esp_system.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/timers.h"
 
 #ifndef SERVOHANDLER_H
 #define SERVOHANDLER_H
-#define SERVO_DURATION 1000
-#define SERVO_FORWARD 160
-#define SERVO_BACKWARD 20
+
+#define SERVO_SPEED 60
+#define SERVO_MIDDLE 90
 #endif
 
 class ServoHandler
@@ -14,9 +18,8 @@ class ServoHandler
 public:
     ServoHandler(int pin);
 
-    void open();
-    void close();
-    bool isRunning();
+    bool open();
+    bool close();
 
 private:
     Servo _servo;
@@ -25,11 +28,8 @@ private:
 
     void stop();
 
-    void openTask();
-    static void openTaskImpl(void *_this);
-    
-    void closeTask();
-    static void closeTaskImpl(void *_this);
-    
-    void setPosition(int servoPosition);
+    static void openTask(void *_this);
+    static void closeTask(void *_this);
+
+    void setPosition(int position);
 };

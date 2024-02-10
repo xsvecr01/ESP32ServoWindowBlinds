@@ -36,9 +36,9 @@ void handleGetCloseTime(AsyncWebServerRequest *request, String time)
     request->send(200, "text/text", time);
 }
 
-void handlePostOpenState(AsyncWebServerRequest *request, StateFileHandler *fileHandler)
+void handlePostOpenState(AsyncWebServerRequest *request, std::function<bool()> callback)
 {
-    String resp = String(fileHandler->toggleOpenState());
+    String resp = String(callback());
     request->send(200, "text/text", resp);
 }
 
@@ -69,23 +69,3 @@ void handlePostCloseTime(AsyncWebServerRequest *request, StateFileHandler *fileH
         request->send(200, "text/plain", "ERR: Time was not set.");
     }
 }
-
-// void setupAndRunServer(AsyncWebServer *server, StateFileHandler *state)
-// {
-//     server->on("/", HTTP_GET, handleLoadHTML);
-//     server->on("/server-time", HTTP_GET, handleGetServerTime);
-
-//     server->on("/time-open", HTTP_GET, [state](AsyncWebServerRequest *request)
-//                { handleGetOpenTime(request, state); });
-
-//     server->on("/time-open", HTTP_POST, [state](AsyncWebServerRequest *request)
-//                { handlePostOpenTime(request, state); });
-
-//     server->on("/time-close", HTTP_GET, [state](AsyncWebServerRequest *request)
-//                { handleGetCloseTime(request, state); });
-
-//     server->on("/time-close", HTTP_POST, [state](AsyncWebServerRequest *request)
-//                { handlePostCloseTime(request, state); });
-
-//     server->begin();
-// }

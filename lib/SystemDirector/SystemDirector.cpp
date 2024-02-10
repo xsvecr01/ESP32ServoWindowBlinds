@@ -1,6 +1,6 @@
 #include "SystemDirector.h"
 
-SystemDirector::SystemDirector() : _server(80), _fileHandler("/state.csv")
+SystemDirector::SystemDirector() : _server(80), _fileHandler("/state.csv"), _servoHandler(27)
 {
 }
 
@@ -20,14 +20,15 @@ void SystemDirector::refresh()
         // should it close? - server time is bigger than closeTime
         if (compareTime(this->_fileHandler.getCloseTime()))
         {
-            this->closeBlinds();
+
+            this->close();
         }
     }
     else if (!this->_fileHandler.getOpenState())
     {
         if (compareTime(this->_fileHandler.getOpenTime()))
         {
-            this->openBlinds();
+            this->open();
         }
     }
 }
@@ -48,7 +49,7 @@ void SystemDirector::setupAndRunServer()
                      { handleGetCloseTime(request, this->_fileHandler.getCloseTime()); });
 
     this->_server.on("/open-state", HTTP_POST, [this](AsyncWebServerRequest *request)
-                     { handlePostOpenState(request, &this->_fileHandler); });
+                     { handlePostOpenState(request, std::bind(&SystemDirector::toggle, this)); });
 
     this->_server.on("/time-open", HTTP_POST, [this](AsyncWebServerRequest *request)
                      { handlePostOpenTime(request, &this->_fileHandler); });
@@ -59,13 +60,31 @@ void SystemDirector::setupAndRunServer()
     this->_server.begin();
 }
 
-void SystemDirector::openBlinds()
+void SystemDirector::open()
 {
-    this->_fileHandler.toggleOpenState();
-    // todo
+    if (this->_servoHandler.open())
+    {
+        this->_fileHandler.toggleOpenState();
+    }
 }
 
-void SystemDirector::closeBlinds()
+void SystemDirector::close()
 {
-    this->_fileHandler.toggleOpenState();
+    if (this->_servoHandler.close())
+    {
+        this->_fileHandler.toggleOpenState();
+    }
+}
+
+bool SystemDirector::toggle()
+{
+    if (this->_fileHandler.getOpenState() == true)
+    {
+        this->close();
+    }
+    else
+    {
+        this->open();
+    }
+    return this->_fileHandler.getOpenState();
 }

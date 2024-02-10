@@ -2,6 +2,7 @@
 #include "ESPAsyncWebServer.h"
 #include "stateFileHandler.h"
 #include "serverApi.h"
+#include "servoHandler.h"
 
 #ifndef SYSTEMDIRECTOR_H
 #define SYSTEMDIRECTOR_H
@@ -13,13 +14,16 @@ public:
     SystemDirector();
     void begin();
 
+    void refresh();
+
 private:
     AsyncWebServer _server;
     StateFileHandler _fileHandler;
+    ServoHandler _servoHandler;
 
     void setupAndRunServer();
 
-    void openBlinds();
-    void closeBlinds();
-    void refresh();
+    void open();
+    void close();
+    bool toggle();
 };

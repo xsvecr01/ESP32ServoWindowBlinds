@@ -12,65 +12,77 @@ ServoHandler::ServoHandler(int pin)
     this->stop();
 }
 
-void ServoHandler::open()
+bool ServoHandler::open()
 {
-    xTaskCreate(
-        this->openTaskImpl,
-        "servo_open_task",
-        512,
-        this,
-        5,
-        NULL);
+    if (this->_running == true)
+    {
+        return false;
+    }
+    else
+    {
+        xTaskCreate(
+            this->openTask,
+            "open_task",
+            1024,
+            (void *)this,
+            5,
+            NULL);
+
+        return true;
+    }
 }
 
-void ServoHandler::close()
+bool ServoHandler::close()
 {
-    xTaskCreate(
-        this->closeTaskImpl,
-        "servo_close_task",
-        512,
-        this,
-        5,
-        NULL);
-}
+    if (this->_running == true)
+    {
+        return false;
+    }
+    else
+    {
+        xTaskCreate(
+            this->closeTask,
+            "close_task",
+            1024,
+            (void *)this,
+            5,
+            NULL);
 
-bool ServoHandler::isRunning()
-{
-    return this->_running;
+        return true;
+    }
 }
 
 void ServoHandler::stop()
 {
-    this->_servo.write(90);
+    this->_servo.write(SERVO_MIDDLE);
 }
 
-void ServoHandler::openTask()
+void ServoHandler::openTask(void *_this)
 {
-    this->setPosition(SERVO_FORWARD);
-}
-void ServoHandler::openTaskImpl(void *_this)
-{
-    ((ServoHandler *)_this)->openTask();
-}
-
-void ServoHandler::closeTask()
-{
-    this->setPosition(SERVO_BACKWARD);
-}
-void ServoHandler::closeTaskImpl(void *_this)
-{
-    ((ServoHandler *)_this)->closeTask();
+    while (1)
+    {
+        ((ServoHandler *)_this)->setPosition(SERVO_MIDDLE + SERVO_SPEED);
+        vTaskDelete(NULL);
+    }
 }
 
-void ServoHandler::setPosition(int servoPosition)
+void ServoHandler::closeTask(void *_this)
+{
+    while (1)
+    {
+        ((ServoHandler *)_this)->setPosition(SERVO_MIDDLE - SERVO_SPEED);
+        vTaskDelete(NULL);
+    }
+}
+
+void ServoHandler::setPosition(int position)
 {
     if (this->_running == false)
     {
         this->_running = true;
 
-        this->_servo.write(160);
-        vTaskDelay(SERVO_DURATION / portTICK_RATE_MS);
-
+        this->_servo.write(position);
+        vTaskDelay(1000 / portTICK_RATE_MS);
         this->stop();
         this->_running = false;
     }
