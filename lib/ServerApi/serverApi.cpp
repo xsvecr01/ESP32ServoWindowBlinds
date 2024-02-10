@@ -20,7 +20,7 @@ void handleGetServerTime(AsyncWebServerRequest *request)
     request->send(200, "text/text", formatTimeStructToString(time, "%A;%U;%B; %d %Y;%H:%M"));
 }
 
-void handleGetOpenState(AsyncWebServerRequest *request, bool open)
+void handleGetBoolState(AsyncWebServerRequest *request, bool open)
 {
     String resp = String(open);
     request->send(200, "text/text", resp);
@@ -36,7 +36,7 @@ void handleGetCloseTime(AsyncWebServerRequest *request, String time)
     request->send(200, "text/text", time);
 }
 
-void handlePostOpenState(AsyncWebServerRequest *request, std::function<bool()> callback)
+void handlePostBoolState(AsyncWebServerRequest *request, std::function<bool()> callback)
 {
     String resp = String(callback());
     request->send(200, "text/text", resp);

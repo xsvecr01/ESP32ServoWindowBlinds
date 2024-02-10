@@ -55,6 +55,7 @@
         border-width: 2px;
         border-style: solid;
         padding: 5px 10px 5px 10px;
+        width: 100%;
       }
 
       .flex-container {
@@ -69,6 +70,8 @@
         display: flex;
         margin: auto;
         margin-top: 10px;
+        margin-bottom: 10px;
+        width: 100%;
       }
 
       .align-right {
@@ -76,6 +79,7 @@
       }
 
       .toggle-button {
+        width: 100%;
         min-width: 150px;
       }
     </style>
@@ -177,6 +181,11 @@
         handleOpenStateResult(result);
       }
 
+      async function fetchManualState() {
+        const result = await fetchGet("/manual-state");
+        handleManualStateResult(result);
+      }
+
       function handleOpenStateResult(result) {
         if (result == 1) {
           document.getElementById("open-state").innerHTML = "Otevřeno (den)";
@@ -186,6 +195,20 @@
           document.getElementById("toggle-button").innerHTML = "Otevřít";
         } else {
           document.getElementById("open-state").innerHTML = result;
+        }
+      }
+
+      function handleManualStateResult(result) {
+        if (result == 1) {
+          document.getElementById("toggle-mode-button").innerHTML =
+            "Automatické otevírání";
+          document.getElementById("control-button").style.display = "flex";
+          document.getElementById("control-table").style.display = "none";
+        } else {
+          document.getElementById("toggle-mode-button").innerHTML =
+            "Manuální otevírání";
+          document.getElementById("control-button").style.display = "none";
+          document.getElementById("control-table").style.display = "table";
         }
       }
 
@@ -218,6 +241,12 @@
         document.getElementById(inputId).value = undefined;
       }
 
+      async function handleToggleManualState() {
+        const result = await fetchPost("/manual-state");
+        handleManualStateResult(result);
+        fetchOpenState();
+      }
+
       async function handleSetOpenTime() {
         await handleSetTime("open");
       }
@@ -242,6 +271,7 @@
         await fetchServerIp();
         await fetchServerTimePeriodically();
         await fetchOpenState();
+        await fetchManualState();
         await fetchOpenTime();
         await fetchCloseTime();
       }
@@ -294,7 +324,16 @@
     </div>
     <div class="flex-container">
       <h2>Změnit</h2>
-      <table>
+      <div class="button-container">
+        <button
+          class="toggle-button"
+          id="toggle-mode-button"
+          onclick="handleToggleManualState()"
+        >
+          Manuální otevírání
+        </button>
+      </div>
+      <table id="control-table">
         <tr>
           <td>Čas otevření:</td>
           <td class="align-right">
@@ -318,7 +357,7 @@
           </td>
         </tr>
       </table>
-      <div class="button-container">
+      <div id="control-button" class="button-container">
         <button
           class="toggle-button"
           id="toggle-button"

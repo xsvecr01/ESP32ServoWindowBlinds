@@ -13,18 +13,22 @@ public:
     SystemDirector();
     void begin();
 
-    void refresh();
-
 private:
     AsyncWebServer _server;
     StateFileHandler _fileHandler;
     ServoHandler _servoHandler;
 
+    static const int _refreshDelay = 10000;
+
     void setupAndRunServer();
+    void refresh();
 
     void open();
     void close();
     bool toggle();
+    bool toggleMode();
+
+    static void refreshTask(void *_this);
 };
 
 #endif

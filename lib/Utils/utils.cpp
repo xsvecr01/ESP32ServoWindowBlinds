@@ -107,22 +107,33 @@ void initTime()
     Serial.println(timeString);
 }
 
-bool compareTime(String time)
+int getServerMinutesTotal()
 {
     struct tm now;
     getServerTime(&now);
+    return (now.tm_hour * 60) + now.tm_min;
+}
 
+int getMinutesTotal(String time)
+{
     int hr = time.substring(0, 2).toInt();
     int min = time.substring(3).toInt();
 
-    if (
-        (now.tm_hour > hr) ||
-        (hr == now.tm_hour && now.tm_min >= min))
+    return (hr * 60) + min;
+}
+
+bool isOpenTime(String openTime, String closeTime)
+{
+    int openMinutesTotal = getMinutesTotal(openTime);
+    int closeMinutesTotal = getMinutesTotal(closeTime);
+    int serverMinutesTotal = getServerMinutesTotal();
+
+    if (openMinutesTotal > closeMinutesTotal)
     {
-        return true;
+        return (serverMinutesTotal >= closeMinutesTotal) || (serverMinutesTotal < openMinutesTotal);
     }
     else
     {
-        return false;
+        return (openMinutesTotal <= serverMinutesTotal) && (serverMinutesTotal <= closeMinutesTotal);
     }
 }

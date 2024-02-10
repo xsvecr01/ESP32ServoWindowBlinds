@@ -11,12 +11,12 @@ void handleLoadHTML(AsyncWebServerRequest *request);
 
 void handleGetServerIp(AsyncWebServerRequest *request);
 void handleGetServerTime(AsyncWebServerRequest *request);
-void handleGetOpenState(AsyncWebServerRequest *request, bool open);
+void handleGetBoolState(AsyncWebServerRequest *request, bool open);
 void handleGetOpenTime(AsyncWebServerRequest *request, String time);
 void handleGetCloseTime(AsyncWebServerRequest *request, String time);
 
 void handlePostTime(AsyncWebServerRequest *request, std::function<String(String)> callback);
-void handlePostOpenState(AsyncWebServerRequest *request, std::function<bool()> callback);
+void handlePostBoolState(AsyncWebServerRequest *request, std::function<bool()> callback);
 
 void setupAndRunServer(AsyncWebServer *server, StateFileHandler *state);
 

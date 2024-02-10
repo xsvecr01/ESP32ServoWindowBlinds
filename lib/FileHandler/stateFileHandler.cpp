@@ -8,24 +8,20 @@ StateFileHandler::StateFileHandler(const char *path)
 void StateFileHandler::init()
 {
     openRead();
-    String open = _file.readStringUntil(',');
+    this->_open = this->convertStringToBool(_file.readStringUntil(','));
+    this->_manualMode = this->convertStringToBool(_file.readStringUntil(','));
     this->_openTime = _file.readStringUntil(',');
     this->_closeTime = _file.readStringUntil(',');
     close();
-
-    if (open.toInt() == 1)
-    {
-        this->_open = true;
-    }
-    else
-    {
-        this->_open = false;
-    }
 }
 
 bool StateFileHandler::getOpenState()
 {
     return this->_open;
+}
+bool StateFileHandler::getManualMode()
+{
+    return this->_manualMode;
 }
 String StateFileHandler::getOpenTime()
 {
@@ -41,6 +37,13 @@ bool StateFileHandler::toggleOpenState()
     this->_open = !this->_open;
     saveState();
     return this->_open;
+}
+
+bool StateFileHandler::toggleManualMode()
+{
+    this->_manualMode = !this->_manualMode;
+    saveState();
+    return this->_manualMode;
 }
 
 String StateFileHandler::setOpenTime(String openTime)
@@ -59,15 +62,14 @@ String StateFileHandler::setCloseTime(String closeTime)
 
 void StateFileHandler::saveState()
 {
-    String openString = "0";
-
-    if (this->_open)
-    {
-        openString = "1";
-    }
+    String value = String(
+        convertBoolToString(this->_open) + "," +
+        convertBoolToString(this->_manualMode) + "," +
+        this->_openTime + "," +
+        this->_closeTime + ",");
 
     openWrite();
-    this->_file.print(String(openString + "," + this->_openTime + "," + this->_closeTime + ","));
+    this->_file.print(value);
     close();
 }
 
@@ -92,4 +94,21 @@ void StateFileHandler::openWrite()
 void StateFileHandler::close()
 {
     this->_file.close();
+}
+
+bool StateFileHandler::convertStringToBool(String value)
+{
+    return (value.toInt() == 1);
+}
+
+String StateFileHandler::convertBoolToString(bool value)
+{
+    if (value == true)
+    {
+        return "1";
+    }
+    else
+    {
+        return "0";
+    }
 }

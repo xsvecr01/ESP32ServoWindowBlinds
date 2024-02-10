@@ -14,6 +14,7 @@ void initGPIO();
 void initWifi();
 void initSPIFFS();
 void initMDNS();
+void initTime();
 
 void getServerTime(struct tm *info);
 
@@ -24,10 +25,5 @@ void getServerTime(struct tm *info);
 /// @return String - formatted time
 String formatTimeStructToString(struct tm info, const char *format);
 
-void initTime();
-
-/// @brief compare time in HH:MM format with local server time
-/// @param time String HH:MM format
-/// @return true if local server time is bigger than time, false otherwise
-bool compareTime(String time);
+bool isOpenTime(String openTime, String closeTime);
 #endif

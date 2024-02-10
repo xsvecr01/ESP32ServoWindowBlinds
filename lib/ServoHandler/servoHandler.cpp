@@ -25,7 +25,7 @@ bool ServoHandler::open()
             "open_task",
             1024,
             (void *)this,
-            5,
+            1,
             NULL);
 
         return true;
@@ -45,7 +45,7 @@ bool ServoHandler::close()
             "close_task",
             1024,
             (void *)this,
-            5,
+            1,
             NULL);
 
         return true;
@@ -82,7 +82,7 @@ void ServoHandler::setPosition(int position)
         this->_running = true;
 
         this->_servo.write(position);
-        vTaskDelay(1000 / portTICK_RATE_MS);
+        vTaskDelay(this->_servoDuration / portTICK_RATE_MS);
         this->stop();
         this->_running = false;
     }
