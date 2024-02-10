@@ -17,7 +17,7 @@ void SystemDirector::refresh()
     // is it open?
     if (this->_fileHandler.getOpenState())
     {
-        // should it close - server time is bigger than closeTime
+        // should it close? - server time is bigger than closeTime
         if (compareTime(this->_fileHandler.getCloseTime()))
         {
             this->closeBlinds();
@@ -36,8 +36,8 @@ void SystemDirector::setupAndRunServer()
 {
     this->_server.on("/", HTTP_GET, handleLoadHTML);
 
+    this->_server.on("/server-ip", HTTP_GET, handleGetServerIp);
     this->_server.on("/server-time", HTTP_GET, handleGetServerTime);
-
     this->_server.on("/open-state", HTTP_GET, [this](AsyncWebServerRequest *request)
                      { handleGetOpenState(request, this->_fileHandler.getOpenState()); });
 

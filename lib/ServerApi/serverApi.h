@@ -11,6 +11,7 @@
 
 void handleLoadHTML(AsyncWebServerRequest *request);
 
+void handleGetServerIp(AsyncWebServerRequest *request);
 void handleGetServerTime(AsyncWebServerRequest *request);
 void handleGetOpenState(AsyncWebServerRequest *request, bool open);
 void handleGetOpenTime(AsyncWebServerRequest *request, String time);

@@ -77,6 +77,8 @@ void initMDNS()
         Serial.println("MDNS responder is not running.");
         return;
     }
+
+    MDNS.addService("http", "tcp", 80);
 }
 
 void getServerTime(struct tm *info)

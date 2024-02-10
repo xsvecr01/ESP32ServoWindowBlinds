@@ -1,6 +1,5 @@
 #pragma once
 #include "ESPAsyncWebServer.h"
-#include "ESP32Servo.h"
 #include "stateFileHandler.h"
 #include "serverApi.h"
 
@@ -14,12 +13,9 @@ public:
     SystemDirector();
     void begin();
 
-
 private:
     AsyncWebServer _server;
     StateFileHandler _fileHandler;
-    Servo _servo;
-
 
     void setupAndRunServer();
 

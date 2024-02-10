@@ -8,6 +8,11 @@ void handleLoadHTML(AsyncWebServerRequest *request)
     request->send(SPIFFS, "/index.html", "text/html");
 }
 
+void handleGetServerIp(AsyncWebServerRequest *request)
+{
+    request->send(200, "text/text", WiFi.localIP().toString());
+}
+
 void handleGetServerTime(AsyncWebServerRequest *request)
 {
     struct tm time;

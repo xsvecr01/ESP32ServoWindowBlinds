@@ -143,6 +143,11 @@
         }
       }
 
+      async function fetchServerIp() {
+        const result = await fetchGet("/server-ip");
+        document.getElementById("ip-addr").innerHTML = result;
+      }
+
       async function fetchServerTime() {
         const result = await fetchGet("/server-time");
         const [day, week, month, date, time] = result.split(";");
@@ -232,6 +237,7 @@
       }
 
       async function onLoad() {
+        await fetchServerIp();
         await fetchServerTimePeriodically();
         await fetchOpenState();
         await fetchOpenTime();
@@ -260,6 +266,10 @@
         <tr>
           <td>Týden:</td>
           <td class="align-right" id="week"></td>
+        </tr>
+        <tr>
+          <td>IP adresa:</td>
+          <td class="align-right" id="ip-addr"></td>
         </tr>
       </table>
     </div>
