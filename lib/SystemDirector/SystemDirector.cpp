@@ -24,6 +24,7 @@ void SystemDirector::setupAndRunServer()
 
     this->_server.on("/server-ip", HTTP_GET, handleGetServerIp);
     this->_server.on("/server-time", HTTP_GET, handleGetServerTime);
+    this->_server.on("/server-uptime", HTTP_GET, handleGetServerUptime);
     this->_server.on("/open-state", HTTP_GET, [this](AsyncWebServerRequest *request)
                      { handleGetBoolState(request, this->_fileHandler.getOpenState()); });
     this->_server.on("/manual-state", HTTP_GET, [this](AsyncWebServerRequest *request)

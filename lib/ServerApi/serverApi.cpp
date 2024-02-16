@@ -20,6 +20,12 @@ void handleGetServerTime(AsyncWebServerRequest *request)
     request->send(200, "text/text", formatTimeStructToString(time, "%A;%U;%B; %d %Y;%H:%M"));
 }
 
+void handleGetServerUptime(AsyncWebServerRequest *request)
+{
+    String uptime = getUptime();
+    request->send(200, "text/text", uptime);
+}
+
 void handleGetBoolState(AsyncWebServerRequest *request, bool open)
 {
     String resp = String(open);

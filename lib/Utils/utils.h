@@ -17,6 +17,8 @@ void initMDNS();
 void initTime();
 
 void getServerTime(struct tm *info);
+String getUptime();
+String convertMicroseconds(long long microseconds);
 
 /// @brief Format time structure into string
 /// @param info time structure: struct tm time

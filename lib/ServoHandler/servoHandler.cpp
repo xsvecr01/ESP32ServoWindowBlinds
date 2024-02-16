@@ -61,7 +61,7 @@ void ServoHandler::openTask(void *_this)
 {
     while (1)
     {
-        ((ServoHandler *)_this)->setPosition(SERVO_MIDDLE + SERVO_SPEED, 500);
+        ((ServoHandler *)_this)->openSmooth();
         vTaskDelete(NULL);
     }
 }
@@ -70,20 +70,49 @@ void ServoHandler::closeTask(void *_this)
 {
     while (1)
     {
-        ((ServoHandler *)_this)->setPosition(SERVO_MIDDLE - SERVO_SPEED, 440);
+        ((ServoHandler *)_this)->closeSmooth();
         vTaskDelete(NULL);
     }
 }
 
-void ServoHandler::setPosition(int position, int duration)
+void ServoHandler::openSmooth()
 {
     if (this->_running == false)
     {
         this->_running = true;
+        this->moveSlow(true);
 
-        this->_servo.write(position);
-        vTaskDelay(duration / portTICK_RATE_MS);
+        this->_servo.write(SERVO_MIDDLE + SERVO_SPEED);
+        vTaskDelay(_delay_open / portTICK_RATE_MS);
+
+        this->moveSlow(true);
+
         this->stop();
         this->_running = false;
     }
+}
+
+void ServoHandler::closeSmooth()
+{
+    if (this->_running == false)
+    {
+        this->_running = true;
+        this->moveSlow(false);
+
+        this->_servo.write(SERVO_MIDDLE - SERVO_SPEED);
+        vTaskDelay(_delay_close / portTICK_RATE_MS);
+
+        this->moveSlow(false);
+
+        this->stop();
+        this->_running = false;
+    }
+}
+
+void ServoHandler::moveSlow(bool open)
+{
+    int speed = open ? SERVO_SLOW : -SERVO_SLOW;
+
+    this->_servo.write(SERVO_MIDDLE + speed);
+    vTaskDelay(_delay_slow / portTICK_RATE_MS);
 }

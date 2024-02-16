@@ -6,6 +6,7 @@
 
 #define SERVO_SPEED 60
 #define SERVO_MIDDLE 90
+#define SERVO_SLOW 20
 
 class ServoHandler
 {
@@ -19,13 +20,21 @@ private:
     Servo _servo;
 
     bool _running = false;
-
-    void stop();
+    // adjust this constants by the installed blinds
+    // default with speed 60:
+    // open 440ms
+    // close 500ms
+    static const int _delay_open = 450;
+    static const int _delay_close = 420;
+    static const int _delay_slow = 50;
 
     static void openTask(void *_this);
     static void closeTask(void *_this);
 
-    void setPosition(int position, int duration);
+    void stop();
+    void moveSlow(bool open);
+    void openSmooth();
+    void closeSmooth();
 };
 
 #endif

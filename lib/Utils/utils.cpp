@@ -4,39 +4,8 @@ const char *ntpServer = "pool.ntp.org";
 const long gmtOffset_sec = 3600;
 const int daylightOffset_sec = 3600;
 
-class BlindsServo
-{
-
-public:
-    BlindsServo(int pin)
-    {
-        ESP32PWM::allocateTimer(0);
-        ESP32PWM::allocateTimer(1);
-        ESP32PWM::allocateTimer(2);
-        ESP32PWM::allocateTimer(3);
-
-        this->servo.setPeriodHertz(50);
-        this->servo.attach(pin);
-        this->servo.write(180);
-    }
-
-    void calibrate()
-    {
-        this->servo.write(45);
-        delay(1000);
-        this->servo.write(135);
-        delay(1000);
-        this->servo.write(90);
-    }
-
-private:
-    Servo servo;
-};
-
 void initGPIO()
 {
-    // BlindsServo servo(SERVO);
-    // servo.calibrate();
     pinMode(LED_BUILTIN, OUTPUT);
 }
 
@@ -105,6 +74,27 @@ void initTime()
     String timeString = formatTimeStructToString(time, "%A, %B %d %Y %H:%M:%S zone %Z %z ");
     Serial.print("Server time: ");
     Serial.println(timeString);
+}
+
+String getUptime()
+{
+    int64_t microSecondsSinceBoot = esp_timer_get_time();
+    return convertMicroseconds(microSecondsSinceBoot);
+}
+
+String convertMicroseconds(long long microseconds)
+{
+    long long seconds = microseconds / 1000000;
+    long long minutes = seconds / 60;
+    long long hours = minutes / 60;
+    long long days = hours / 24;
+
+    // Calculate remaining hours, minutes, and seconds after removing days
+    hours %= 24;
+    minutes %= 60;
+    seconds %= 60;
+
+    return String(String(days) + ":" + String(hours) + ":" + String(minutes) + ":" + String(seconds));
 }
 
 int getServerMinutesTotal()
