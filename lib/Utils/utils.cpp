@@ -13,29 +13,52 @@ void initWifi()
 {
     WiFi.mode(WIFI_STA);
     WiFi.setAutoReconnect(true);
-
     WiFi.begin(WIFI_SSID, WIFI_PASS);
-    Serial.print("Connecting to WiFi ..");
 
+    waitForWifiConnection();
+
+    Serial.println(WiFi.localIP());
+}
+
+void waitForWifiConnection()
+{
+    Serial.print("Connecting to WiFi");
+
+    int tries = 0;
     while (WiFi.status() != WL_CONNECTED)
     {
+        if (tries > 60)
+        {
+            resetSystem("WiFi");
+        }
+        if (tries != 0 && tries % 20 == 0)
+        {
+            if (WiFi.reconnect())
+            {
+                Serial.println("");
+                Serial.print("Reconnecting");
+            }
+            else
+            {
+                resetSystem("WiFi reconnect");
+            }
+        }
+
         Serial.print('.');
-        digitalWrite(LED_BUILTIN, HIGH);
-        delay(500);
-        digitalWrite(LED_BUILTIN, LOW);
-        delay(500);
+        blinkLEDBlocking(1000);
+
+        tries++;
     }
+
     Serial.println("");
     Serial.print("Connected with IP address: ");
-    Serial.println(WiFi.localIP());
 }
 
 void initSPIFFS()
 {
     if (!SPIFFS.begin(true))
     {
-        Serial.println("An Error has occurred while mounting SPIFFS");
-        return;
+        resetSystem("SPIFFS");
     }
 }
 
@@ -43,8 +66,7 @@ void initMDNS()
 {
     if (!MDNS.begin("zaluzie"))
     {
-        Serial.println("MDNS responder is not running.");
-        return;
+        resetSystem("MDNS");
     }
 
     MDNS.addService("http", "tcp", 80);
@@ -94,7 +116,20 @@ String convertMicroseconds(long long microseconds)
     minutes %= 60;
     seconds %= 60;
 
-    return String(String(days) + ":" + String(hours) + ":" + String(minutes) + ":" + String(seconds));
+    // add leading zeros
+    String result = "";
+    result += String(days) + ":";
+    if (hours < 10)
+        result += "0";
+    result += String(hours) + ":";
+    if (minutes < 10)
+        result += "0";
+    result += String(minutes) + ":";
+    if (seconds < 10)
+        result += "0";
+    result += String(seconds);
+
+    return result;
 }
 
 int getServerMinutesTotal()
@@ -120,10 +155,31 @@ bool isOpenTime(String openTime, String closeTime)
 
     if (openMinutesTotal > closeMinutesTotal)
     {
-        return (serverMinutesTotal >= closeMinutesTotal) || (serverMinutesTotal < openMinutesTotal);
+        return (serverMinutesTotal >= closeMinutesTotal) || (serverMinutesTotal <= openMinutesTotal);
     }
     else
     {
-        return (openMinutesTotal <= serverMinutesTotal) && (serverMinutesTotal <= closeMinutesTotal);
+        return (serverMinutesTotal >= openMinutesTotal) && (serverMinutesTotal <= closeMinutesTotal);
     }
+}
+
+void blinkLEDBlocking(int interval)
+{
+    int duration = interval / 2;
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(duration);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(duration);
+}
+
+void resetSystem(String source)
+{
+    Serial.println("Error - performing software reset. Source: " + source);
+    for (int i = 0; i < 5; i++)
+    {
+        blinkLEDBlocking(100);
+    }
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(1000);
+    ESP.restart();
 }

@@ -12,9 +12,14 @@
 
 void initGPIO();
 void initWifi();
+void waitForWifiConnection();
+
 void initSPIFFS();
 void initMDNS();
 void initTime();
+
+void blinkLEDBlocking(int interval);
+void resetSystem(String source);
 
 void getServerTime(struct tm *info);
 String getUptime();

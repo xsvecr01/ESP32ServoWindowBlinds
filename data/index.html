@@ -9,7 +9,7 @@
         background-color: black;
         color: lightgray;
         font-family: Verdana, Geneva, Tahoma, sans-serif;
-        width: 100%;
+        max-width: 800px;
         margin: auto;
       }
 
@@ -124,7 +124,7 @@
           }
         } catch (e) {
           console.error(e);
-          return "Server unavailable";
+          return "" + e;
         }
       }
 
@@ -156,13 +156,20 @@
 
       async function fetchServerTime() {
         const result = await fetchGet("/server-time");
-        const [day, week, month, date, time] = result.split(";");
-        if (day && week && month && date && time) {
+        const [day, week, month, date, year, time] = result.split(";");
+        if (!time) {
+          document.getElementById("time").innerHTML = result;
+        } else {
           document.getElementById("time").innerHTML = time;
-          document.getElementById("day").innerHTML = dayTranslation[day];
-          document.getElementById("week").innerHTML = week;
+          document.getElementById("week").innerHTML = week + ".";
           document.getElementById("date").innerHTML =
-            monthTranslation[month] + " " + date;
+            dayTranslation[day] +
+            ", " +
+            date +
+            ". " +
+            monthTranslation[month] +
+            " " +
+            year;
         }
       }
 
@@ -273,7 +280,7 @@
         setInterval(async () => {
           await fetchServerTime();
           await fetchServerUptime();
-        }, 10000);
+        }, 5000);
       }
 
       async function onLoad() {
@@ -294,10 +301,6 @@
         <tr>
           <td>Čas:</td>
           <td class="align-right" id="time"></td>
-        </tr>
-        <tr>
-          <td>Den:</td>
-          <td class="align-right" id="day"></td>
         </tr>
         <tr>
           <td>Datum:</td>

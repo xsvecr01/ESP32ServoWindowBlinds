@@ -17,7 +17,8 @@ void handleGetServerTime(AsyncWebServerRequest *request)
 {
     struct tm time;
     getServerTime(&time);
-    request->send(200, "text/text", formatTimeStructToString(time, "%A;%U;%B; %d %Y;%H:%M"));
+    // day; week number; month; date; year; hours:minutes
+    request->send(200, "text/text", formatTimeStructToString(time, "%A;%V;%B;%e;%Y;%H:%M"));
 }
 
 void handleGetServerUptime(AsyncWebServerRequest *request)
